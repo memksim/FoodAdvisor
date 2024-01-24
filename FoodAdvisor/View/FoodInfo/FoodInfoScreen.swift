@@ -61,7 +61,7 @@ struct FoodInfoScreen: View {
                     },
                     label: {
                         HStack() {
-                            Text(getCategoryTitle())
+                            Text(categories.toTitle())
                                 .foregroundStyle(Color("TitleTextColor"))
                                 .padding(.leading, 24)
                             Image(systemName: "pencil")
@@ -70,7 +70,7 @@ struct FoodInfoScreen: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 })
             } else {
-                Text(getCategoryTitle())
+                Text(categories.toTitle())
                     .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, alignment: .leading)
                     .foregroundStyle(Color("TitleTextColor"))
                     .padding(.leading, 24)
@@ -96,7 +96,7 @@ struct FoodInfoScreen: View {
                         .frame(maxHeight: 250)
                 }
             }
-            Text("Приготовление")
+            Text("Рецепт")
                 .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, alignment: .leading)
                 .foregroundStyle(Color("TitleTextColor"))
                 .padding(.init(top: 36, leading: 24, bottom: 0, trailing: 0))
@@ -128,17 +128,6 @@ struct FoodInfoScreen: View {
             .presentationCornerRadius(25)
         }
         
-    }
-    
-    private func getCategoryTitle() -> String {
-        var result = ""
-        categories.forEach { category in
-            if(category.selected) { 
-                result.append("\(category.title)/")
-            }
-        }
-        result.removeLast()
-        return result
     }
     
 }

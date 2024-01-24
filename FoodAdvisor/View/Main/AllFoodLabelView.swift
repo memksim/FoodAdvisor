@@ -13,6 +13,7 @@ struct AllFoodLabelView: View {
     @State private var searchFieldVisible = false
     var doOnFilterClick: () -> Void
     var doOnCloseSearchField: () -> Void
+    var doOnAddClick: () -> Void
     
     var body: some View {
         VStack {
@@ -36,8 +37,14 @@ struct AllFoodLabelView: View {
                     label: {
                         Image(systemName: "line.3.horizontal.decrease")
                         .foregroundStyle(.gray)
-                })
-                .padding(.leading)
+                }).padding()
+                Button(
+                    action: doOnAddClick,
+                    label: {
+                        Image(systemName: "plus")
+                            .foregroundStyle(.gray)
+                    }
+                )
             }
             if(searchFieldVisible) {
                 SearchFieldView(foodName: $foodName)
@@ -60,3 +67,12 @@ private struct SearchFieldView: View {
     }
 }
 
+#Preview {
+    @State var foodName = "Макарони"
+    return AllFoodLabelView(
+        foodName: $foodName,
+        doOnFilterClick: {},
+        doOnCloseSearchField: {},
+        doOnAddClick: {}
+    )
+}

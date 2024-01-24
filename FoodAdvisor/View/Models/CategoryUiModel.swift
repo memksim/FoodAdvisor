@@ -54,4 +54,19 @@ extension [CategoryUiModel] {
         }
         return count
     }
+    
+    func toTitle() -> String {
+        var result = ""
+        if(!self.isEmpty) {
+            self.forEach { category in
+                if(category.selected) {
+                    result.append("\(category.title)/")
+                }
+            }
+            result.removeLast()
+        } else {
+            return "Нет выбранных категорий"
+        }
+        return result
+    }
 }

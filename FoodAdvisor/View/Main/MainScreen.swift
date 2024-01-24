@@ -47,6 +47,9 @@ struct MainScreen: View {
                 doOnCloseSearchField: {
                     searchedFoodName = ""
                     findFoodsByName()
+                },
+                doOnAddClick: {
+                    
                 }
             )
             ScrollView {
