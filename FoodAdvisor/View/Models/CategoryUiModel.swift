@@ -14,7 +14,10 @@ struct CategoryUiModel: Identifiable, Hashable {
     var selected: Bool
 }
 
+// Расширения для категории
+
 extension CategoryUiModel {
+    // Проверяет наличие категории в массиве
     static func contains(
         what checked: CategoryUiModel,
         in categories: [CategoryUiModel]
@@ -29,6 +32,7 @@ extension CategoryUiModel {
         return result
     }
     
+    // Проверяет у всех ли элементов в массиве значение selected = false
     static func checkAllCategoriesUnselected(
         _ categories: [CategoryUiModel]
     ) -> Bool {
@@ -44,7 +48,11 @@ extension CategoryUiModel {
     
 }
 
+// Расширения для массива категорий
+
 extension [CategoryUiModel] {
+    
+    // Возвращает кол-во элементов с полем selected = true
     func selectedCategoriesCount() -> Int {
         var count = 0
         self.forEach{ category in
@@ -55,6 +63,7 @@ extension [CategoryUiModel] {
         return count
     }
     
+    // Приводит массив категорий к виду название1/название2/.../названиеN
     func toTitle() -> String {
         var result = ""
         if(!self.isEmpty) {

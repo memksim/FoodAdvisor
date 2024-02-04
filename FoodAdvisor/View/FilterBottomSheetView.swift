@@ -16,7 +16,7 @@ struct FilterBottomSheetView: View {
     @State private var unselectAll: Bool = false
     
     var body: some View {
-        VStack {
+        VStack() {
             HStack {
                 Text("Фильтрация")
                     .foregroundStyle(Color("TitleTextColor"))
@@ -30,7 +30,7 @@ struct FilterBottomSheetView: View {
                         .foregroundStyle(.orange)
                 })
             }
-            .padding()
+            .padding(.init(top: 24, leading: 12, bottom: 0, trailing: 12))
             GeometryReader { geometry in
                 ScrollView {
                     FlexibleView (
@@ -49,7 +49,18 @@ struct FilterBottomSheetView: View {
                     }
                 }
             }
-            .padding()
+            .padding(.init(top: 0, leading: 12, bottom: 0, trailing: 12))
+            Button(action: {
+                //todo
+            }, label: {
+                HStack {
+                    Image(systemName: "gearshape")
+                        .foregroundStyle(.gray)
+                    
+                }
+            })
+            .padding(.init(top: 0, leading: 16, bottom: 0, trailing: 12))
+            .frame(maxWidth: .infinity, alignment: .leading)
                 
         }
         .background(Color("SheetBackgroundColor"))
@@ -120,4 +131,12 @@ private struct SizePreferenceKey: PreferenceKey {
     static func reduce(value: inout CGSize, nextValue: () -> CGSize) {}
 }
 
+#Preview {
+    FilterBottomSheetView(
+        categories: mockCategories,
+        doOnApplyClicked: { _ in
+            
+        }
+    )
+}
 

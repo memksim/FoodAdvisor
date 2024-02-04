@@ -58,12 +58,7 @@ private struct SearchFieldView: View {
     @Binding var foodName: String
     
     var body: some View {
-        HStack {
-            TextField("Название блюда", text: $foodName)
-                .onSubmit() {
-                    print("submit")
-                }
-        }
+        TextField("Название блюда", text: $foodName)        
     }
 }
 
