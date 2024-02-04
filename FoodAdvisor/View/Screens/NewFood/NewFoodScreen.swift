@@ -9,47 +9,34 @@ import SwiftUI
 
 struct NewFoodScreen: View {
     
-    @State private var foodName = "Название блюда"
-    @State private var imageUrls: [URL?] = []
-    @State private var state: NewFoodScreenState = .insert
-    @State private var categories: [CategoryUiModel] = []
-    @State private var sheetOpened = false
-    @State private var recipe = ""
+    @State private var viewModel = NewFoodViewModel()
     
     var body: some View {
         VStack {
             HStack {
-                if(state == .edit || state == .insert) {
-                    TextField("Название блюда", text: $foodName)
+                if(viewModel.state.editMode != .view) {
+                    TextField("Название блюда", text: $viewModel.state.foodName)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .font(.title)
                         .foregroundStyle(Color("TitleTextColor"))
                         .padding(.leading, 24)
                 } else {
-                    Text(foodName)
+                    Text(viewModel.state.foodName)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .font(.title)
                         .foregroundStyle(Color("TitleTextColor"))
                         .padding(.leading, 24)
                 }
-                Button(action: {
-                    switch(state) {
-                        case .edit : state = .view
-                        case .insert : state = .view
-                        case .view: state = .edit
-                    }
-                }, label: {
-                    Text(state == .view ? "Изменить" : (state == .edit ? "Готово" : "Сохранить"))
+                Button(action: viewModel.changeEditMode, label: {
+                    Text(viewModel.state.editMode == .view ? "Изменить" : (viewModel.state.editMode == .edit ? "Готово" : "Сохранить"))
                         .foregroundStyle(.orange)
                         .padding(.trailing, 24)
                 })
             }
-            if(state == .edit || state == .insert){
-                Button(action: {
-                    sheetOpened.toggle()
-                }, label: {
+            if(viewModel.state.editMode != .view){
+                Button(action: viewModel.toggleBottomSheetVisible, label: {
                     HStack() {
-                        Text(categories.toTitle())
+                        Text(viewModel.state.categories.toTitle())
                             .foregroundStyle(Color("TitleTextColor"))
                             .padding(.leading, 24)
                         Image(systemName: "pencil")
@@ -59,27 +46,24 @@ struct NewFoodScreen: View {
                 })
                 .frame(maxWidth: .infinity, alignment: .leading)
             } else {
-                Text(categories.toTitle())
+                Text(viewModel.state.categories.toTitle())
                     .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, alignment: .leading)
                     .foregroundStyle(Color("TitleTextColor"))
                     .padding(.leading, 24)
             }
-            AddImagesView(
-                imagesUrls: $imageUrls,
-                state: $state
-            )
+            AddImagesView(viewModel: $viewModel)
             Text("Рецепт")
                 .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, alignment: .leading)
                 .foregroundStyle(Color("TitleTextColor"))
                 .padding(.init(top: 36, leading: 24, bottom: 0, trailing: 0))
                 .font(.title2)
             ScrollView {
-                if(state == .edit || state == .insert) {
-                    TextField("Рецепт", text: $recipe)
+                if(viewModel.state.editMode != .view) {
+                    TextField("Рецепт", text: $viewModel.state.recipe)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.init(top: 4, leading: 24, bottom: 0, trailing: 0))
                 } else {
-                    Text(recipe)
+                    Text(viewModel.state.recipe)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.init(top: 4, leading: 24, bottom: 0, trailing: 0))
                 }
@@ -87,14 +71,10 @@ struct NewFoodScreen: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(Color("SheetBackgroundColor"))
-        .sheet(isPresented: $sheetOpened) {
+        .sheet(isPresented: $viewModel.state.bottomSheetVisible) {
             FilterBottomSheetView(
-                categories: categories,
-                doOnApplyClicked: { selectedCategories in
-                    if(selectedCategories.selectedCategoriesCount() != 0) {
-                        self.categories = selectedCategories
-                    }
-                }
+                categories: viewModel.state.categories,
+                doOnApplyClicked: viewModel.updateSelectedCategories
             )
             .presentationDetents([.height(250)])
             .presentationCornerRadius(25)

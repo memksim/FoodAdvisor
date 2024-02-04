@@ -9,41 +9,20 @@ import SwiftUI
 
 struct EditCategoriesScreen: View {
         
-    let categories: [CategoryUiModel]
-    @State private var searchedCategories: [CategoryUiModel]
-    @State private var categoryTitle: String = ""
-    @State private var editModeOn: Bool = false
-    
-    init(categories: [CategoryUiModel]) {
-        self.categories = categories
-        self._searchedCategories = State(initialValue: categories)
-    }
+    @State private var viewModel = EditCategoriesViewModel()
     
     var body: some View {
         VStack {
             Button(
-                action: {
-                    editModeOn.toggle()
-                },
+                action: viewModel.toggleEditMode,
                 label: {
-                    Text(editModeOn ? "Готово" : "Редактировать")
+                    Text(viewModel.state.editingModeOn ? "Готово" : "Редактировать")
                         .foregroundStyle(.orange)
                 }
             ).frame(maxWidth: .infinity, alignment: .trailing).padding(.trailing, 18)
-            SearchFieldView { categoryTitle in
-                self.categoryTitle = categoryTitle
-                if(categoryTitle.isEmpty) {
-                    searchedCategories = categories
-                } else {
-                    searchedCategories.removeAll()
-                    categories.forEach { category in
-                        if(category.title.contains(categoryTitle)) {
-                            searchedCategories.append(category)
-                        }
-                    }
-                }
-            }.padding(.init(top: 12, leading: 16, bottom: 0, trailing: 16))
-            if(searchedCategories.isEmpty) {
+            SearchFieldView(doOnSearchClicked: viewModel.searchButtonClicked)
+                .padding(.init(top: 12, leading: 16, bottom: 0, trailing: 16))
+            if(viewModel.state.categories.isEmpty) {
                 Button(
                     action: {
                         //todo
@@ -52,7 +31,7 @@ struct EditCategoriesScreen: View {
                         HStack {
                             Image(systemName: "plus")
                                 .foregroundStyle(.gray)
-                            Text(categories.isEmpty ? "Добавьте новую категорию" : "Добавить категорию \(categoryTitle)")
+                            Text("Создать категорию \(viewModel.state.categoryTitle)")
                                 .foregroundStyle(.gray)
                         }.frame(maxWidth: .infinity, alignment: .leading)
                     }
@@ -60,11 +39,11 @@ struct EditCategoriesScreen: View {
             }
             ScrollView {
                 LazyVStack {
-                    ForEach(searchedCategories, id: \.id) { category in
+                    ForEach(viewModel.state.categories, id: \.id) { category in
                         HStack {
                             Text(category.title)
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                            if(editModeOn){
+                            if(viewModel.state.editingModeOn){
                                 Button(
                                     action: {
                                         //todo delete item
@@ -76,7 +55,7 @@ struct EditCategoriesScreen: View {
                                 )
                             }
                         }
-                        if(searchedCategories.last != category) {
+                        if(viewModel.state.categories.last != category) {
                             Divider()
                         }
                     }
@@ -117,7 +96,5 @@ private struct SearchFieldView: View {
 }
 
 #Preview {
-    EditCategoriesScreen(
-        categories: mockCategories
-    )
+    EditCategoriesScreen()
 }

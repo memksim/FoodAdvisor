@@ -32,25 +32,20 @@ extension CategoryUiModel {
         return result
     }
     
-    // Проверяет у всех ли элементов в массиве значение selected = false
-    static func checkAllCategoriesUnselected(
-        _ categories: [CategoryUiModel]
-    ) -> Bool {
-        var result = true
-        for category in categories {
-            if(category.selected) {
-                result = false
-                break
-            }
-        }
-        return result
-    }
-    
 }
 
 // Расширения для массива категорий
 
 extension [CategoryUiModel] {
+    
+    // Проверяет у всех ли элементов в массиве значение selected = false
+    func checkAllCategoriesUnselected() -> Bool {
+        if(self.first{ category in category.selected } == nil) {
+            return true
+        } else {
+            return false
+        }
+    }
     
     // Возвращает кол-во элементов с полем selected = true
     func selectedCategoriesCount() -> Int {

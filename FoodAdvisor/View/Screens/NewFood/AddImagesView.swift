@@ -9,12 +9,11 @@ import SwiftUI
 
 struct AddImagesView: View {
     
-    @Binding var imagesUrls: [URL?]
-    @Binding var state: NewFoodScreenState
+    @Binding var viewModel: NewFoodViewModel
     
     var body: some View {
         VStack() {
-            if(state == .edit || state == .insert){
+            if(viewModel.state.editMode != .view){
                 Button(action: {
                     //todo
                 }, label: {
@@ -32,9 +31,9 @@ struct AddImagesView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             ScrollView(.horizontal, showsIndicators: false) {
-                if(!imagesUrls.isEmpty) {
+                if(!viewModel.state.imageUrls.isEmpty) {
                     LazyHStack {
-                        ForEach(imagesUrls, id: \.self) { url in
+                        ForEach(viewModel.state.imageUrls, id: \.self) { url in
                             AsyncImage(url: url) { image in
                                 image.image?
                                     .resizable()
@@ -57,14 +56,4 @@ struct AddImagesView: View {
         .frame(width: .infinity, height: 120)
         .padding(.init(top: 24, leading: 24, bottom: 0, trailing: 0))
     }
-}
-
-#Preview {
-    @State var state: NewFoodScreenState = .view
-    
-    @State var imageUrls: [URL?] = []
-    return AddImagesView(
-        imagesUrls: $imageUrls,
-        state: $state
-    )
 }

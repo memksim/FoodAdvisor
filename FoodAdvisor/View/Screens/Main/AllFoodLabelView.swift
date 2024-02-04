@@ -20,7 +20,6 @@ struct AllFoodLabelView: View {
             HStack {
                 Text("Все блюда")
                     .font(.title2)
-                    .foregroundStyle(Color("TitleTextColor"))
                 Spacer()
                 Button(action: {
                     searchFieldVisible.toggle()
@@ -45,11 +44,11 @@ struct AllFoodLabelView: View {
                             .foregroundStyle(.gray)
                     }
                 )
-            }
+            }.frame(height: 28)
             if(searchFieldVisible) {
                 SearchFieldView(foodName: $foodName)
             }
-        }.padding()
+        }
     }
 }
 
@@ -58,7 +57,7 @@ private struct SearchFieldView: View {
     @Binding var foodName: String
     
     var body: some View {
-        TextField("Название блюда", text: $foodName)        
+        TextField("Название блюда", text: $foodName)
     }
 }
 

@@ -9,59 +9,46 @@ import SwiftUI
 
 struct FoodInfoScreen: View {
     
-    @State private var editingModeOn = true
+    @State private var viewModel: FoodInfoViewModel
     @State private var index = 0
-    @State private var stateFood: FoodUiModel
-    @State private var sheetOpened = false
-    @State private var categories: [CategoryUiModel]
     
-    let food: FoodUiModel
-    
-    init(food: FoodUiModel, categories: [CategoryUiModel]) {
-        self.food = food
-        self._stateFood = State(initialValue: food)
-        self._categories = State(initialValue: categories.map { category in
-            return CategoryUiModel(
-                id: category.id,
-                title: category.title,
-                selected: food.categories.contains(category)
-            )
-        })
+    init(food: FoodUiModel) {
+        viewModel = FoodInfoViewModel(food: food)
     }
     
     var body: some View {
         VStack(){
             HStack {
-                if(editingModeOn) {
-                    TextField("Название блюда", text: $stateFood.name)
+                if(viewModel.state.editingModeOn) {
+                    TextField("Название блюда", text: $viewModel.state.food.name)
                         .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, alignment: .leading)
                         .font(.title)
                         .foregroundStyle(Color("TitleTextColor"))
                         .padding(.leading, 24)
                 } else {
-                    Text(stateFood.name)
+                    Text(viewModel.state.food.name)
                         .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, alignment: .leading)
                         .font(.title)
                         .foregroundStyle(Color("TitleTextColor"))
                     .padding(.leading, 24)
                 }
                 Button(action: {
-                    editingModeOn.toggle()
+                    viewModel.toggleEditingMode()
                     index = 0
                 }, label: {
-                    Text(editingModeOn ? "Готово" : "Изменить")
+                    Text(viewModel.state.editingModeOn ? "Готово" : "Изменить")
                         .padding(.trailing, 24)
                         .foregroundStyle(.orange)
                 })
             }
-            if(editingModeOn) {
+            if(viewModel.state.editingModeOn) {
                 Button(
                     action: {
-                        sheetOpened.toggle()
+                        viewModel.toggleBottomSheetVisible()
                     },
                     label: {
                         HStack() {
-                            Text(categories.toTitle())
+                            Text(viewModel.state.categories.toTitle())
                                 .foregroundStyle(Color("TitleTextColor"))
                                 .padding(.leading, 24)
                             Image(systemName: "pencil")
@@ -70,23 +57,20 @@ struct FoodInfoScreen: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 })
             } else {
-                Text(categories.toTitle())
+                Text(viewModel.state.categories.toTitle())
                     .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, alignment: .leading)
                     .foregroundStyle(Color("TitleTextColor"))
                     .padding(.leading, 24)
             }
             HStack {
-                if (stateFood.image_urls == nil || stateFood.image_urls?.isEmpty == false) {
+                if (viewModel.state.food.image_urls == nil || viewModel.state.food.image_urls?.isEmpty == false) {
                     PagingAsyncImagesView(
-                        imagesUrlArray: stateFood.image_urls!,
-                        editingModeOn: $editingModeOn,
+                        imagesUrlArray: viewModel.state.food.image_urls!,
+                        editingModeOn: $viewModel.state.editingModeOn,
                         index: $index,
                         onRemoveImage: { imageUrl in
                             if(imageUrl != nil) {
-                                if let index = stateFood.image_urls?.firstIndex(of: imageUrl!) {
-                                    print("on remove \(imageUrl!), index \(index)")
-                                    stateFood.image_urls?.remove(at: index)
-                                }
+                                viewModel.removeImage(imageUrl: imageUrl!)
                             }
                         }
                     ).frame(maxHeight: 250)
@@ -102,12 +86,12 @@ struct FoodInfoScreen: View {
                 .padding(.init(top: 36, leading: 24, bottom: 0, trailing: 0))
                 .font(.title2)
             ScrollView {
-                if(editingModeOn) {
-                    TextField("Рецепт", text: $stateFood.recipe)
+                if(viewModel.state.editingModeOn) {
+                    TextField("Рецепт", text: $viewModel.state.food.recipe)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.init(top: 4, leading: 24, bottom: 0, trailing: 0))
                 } else {
-                    Text(stateFood.recipe)
+                    Text(viewModel.state.food.recipe)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.init(top: 4, leading: 24, bottom: 0, trailing: 0))
                 }
@@ -115,14 +99,10 @@ struct FoodInfoScreen: View {
         }
         .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, maxHeight: .infinity, alignment: .topLeading)
         .background(Color("SheetBackgroundColor"))
-        .sheet(isPresented: $sheetOpened) {
+        .sheet(isPresented: $viewModel.state.bottomSheetVisible) {
             FilterBottomSheetView(
-                categories: categories,
-                doOnApplyClicked: { selectedCategories in
-                    if(selectedCategories.selectedCategoriesCount() != 0) {
-                        self.categories = selectedCategories
-                    }
-                }
+                categories: viewModel.state.categories,
+                doOnApplyClicked: viewModel.updateSelectedCategories
             )
             .presentationDetents([.height(250)])
             .presentationCornerRadius(25)
@@ -145,7 +125,6 @@ struct FoodInfoScreen: View {
             categories: [
                 mockCategories[0],
                 mockCategories[1]
-            ]),
-        categories: mockCategories
+            ])
     )
 }

@@ -9,104 +9,51 @@ import SwiftUI
 
 struct MainScreen: View {
     
-    @State private var filterSheetOpened = false
-    @State private var filteredFoods: [FoodUiModel] = []
-    @State private var categories: [CategoryUiModel] = []
-    @State private var searchedFoodName = ""
-    
-    private let foodOfDay: FoodUiModel?
-    private let foods: [FoodUiModel]
-    
-    init(
-        foods: [FoodUiModel],
-        categories: [CategoryUiModel]
-    ) {
-        self.foodOfDay = foods.filter{ food in
-            food.image_urls != nil && food.image_urls?.isEmpty == false
-        }.randomElement()
-        self._categories = State(initialValue: categories)
-        self.foods = foods
-    }
+    @State private var viewModel = MainScreenViewModel()
     
     var body: some View {
         VStack {
-            if(foodOfDay != nil) {
-                FoodOfDayView(imageUrl: foodOfDay!.image_urls![0])
+            if(viewModel.state.foodOfDay != nil) {
+                FoodOfDayView(imageUrl: viewModel.state.foodOfDay!.image_urls![0])
                     .padding()
             }
             AllFoodLabelView(
-                foodName: Binding(get: { self.searchedFoodName },
+                foodName: Binding(get: { viewModel.state.searchedFoodName },
                 set: { newValue in
-                    print(searchedFoodName)
-                    searchedFoodName = newValue
-                    findFoodsByName()
+                    viewModel.findFoodsByName(foodName: newValue)
                 }),
                 doOnFilterClick: {
-                    filterSheetOpened.toggle()
-                }, 
+                    viewModel.showHideFilterBottomSheet()
+                },
                 doOnCloseSearchField: {
-                    searchedFoodName = ""
-                    findFoodsByName()
+                    viewModel.findFoodsByName(foodName: "")
                 },
                 doOnAddClick: {
                     
                 }
-            )
+            ).padding(.init(top: 0, leading: 16, bottom: 0, trailing: 16))
             ScrollView {
                 LazyVStack {
-                    ForEach(filteredFoods, id: \.id) { food in
+                    ForEach(viewModel.state.foods, id: \.id) { food in
                         Text(food.name)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         Divider()
                     }
                 }
             }
-            .onAppear {
-                filteredFoods = foods
-            }
-            .padding()
+            .padding(.init(top: 6, leading: 16, bottom: 16, trailing: 16))
         }
         .frame(maxWidth: .infinity, maxHeight: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, alignment: .top)
         .background(Color("BackgroundColor").ignoresSafeArea(.all))
         .sheet(
-            isPresented: $filterSheetOpened) {
+            isPresented: $viewModel.state.filterBottomSheetVisible) {
                 FilterBottomSheetView(
-                    categories: categories
+                    categories: viewModel.state.categories
                 ) { selectedCategories in
-                    categories = selectedCategories
-                    if(CategoryUiModel.checkAllCategoriesUnselected(categories)) {
-                        filteredFoods = foods
-                    } else {
-                        filterFoods()
-                    }
+                    viewModel.filterFoodsByCatefories(categories: selectedCategories)
                 }
                 .presentationDetents([.height(250)])
                 .presentationCornerRadius(25)
-        }
-    }
-    
-    private func filterFoods() {
-        filteredFoods.removeAll()
-        categories.forEach { category in
-            foods.forEach { food in
-                if (CategoryUiModel.contains(what: category, in: food.categories) && category.selected) {
-                    print("\(food.name) --- \(category)")
-                    filteredFoods.append(food)
-                }
-            }
-        }
-    }
-    
-    private func findFoodsByName() {
-        if(searchedFoodName.isEmpty) {
-            filteredFoods = foods
-        } else {
-            filteredFoods.removeAll()
-            foods.forEach { food in
-                if(food.name.contains(searchedFoodName)) {
-                    filteredFoods.append(food)
-                }
-            }
         }
     }
 }
@@ -157,8 +104,5 @@ let mockFoods = [
 ]
 
 #Preview {
-    MainScreen(
-        foods: mockFoods,
-        categories: mockCategories
-    )
+    MainScreen()
 }
