@@ -24,7 +24,6 @@ struct FoodAdvisorApp: App {
                         }
                     }
             }
-            ContentView()
         }
     }
 }

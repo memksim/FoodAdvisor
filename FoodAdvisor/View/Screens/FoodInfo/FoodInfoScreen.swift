@@ -18,28 +18,18 @@ struct FoodInfoScreen: View {
     
     var body: some View {
         VStack(){
-            HStack {
-                if(viewModel.state.editingModeOn) {
-                    TextField("Название блюда", text: $viewModel.state.food.name)
-                        .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, alignment: .leading)
-                        .font(.title)
-                        .foregroundStyle(Color("TitleTextColor"))
-                        .padding(.leading, 24)
-                } else {
-                    Text(viewModel.state.food.name)
-                        .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, alignment: .leading)
-                        .font(.title)
-                        .foregroundStyle(Color("TitleTextColor"))
+            if(viewModel.state.editingModeOn) {
+                TextField("Название блюда", text: $viewModel.state.food.name)
+                    .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, alignment: .leading)
+                    .font(.title)
+                    .foregroundStyle(Color("TitleTextColor"))
                     .padding(.leading, 24)
-                }
-                Button(action: {
-                    viewModel.toggleEditingMode()
-                    index = 0
-                }, label: {
-                    Text(viewModel.state.editingModeOn ? "Готово" : "Изменить")
-                        .padding(.trailing, 24)
-                        .foregroundStyle(.orange)
-                })
+            } else {
+                Text(viewModel.state.food.name)
+                    .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, alignment: .leading)
+                    .font(.title)
+                    .foregroundStyle(Color("TitleTextColor"))
+                .padding(.leading, 24)
             }
             if(viewModel.state.editingModeOn) {
                 Button(
@@ -52,7 +42,7 @@ struct FoodInfoScreen: View {
                                 .foregroundStyle(Color("TitleTextColor"))
                                 .padding(.leading, 24)
                             Image(systemName: "pencil")
-                                .foregroundStyle(.orange)
+                                .foregroundStyle(Color.accentColor)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                 })
@@ -101,11 +91,22 @@ struct FoodInfoScreen: View {
         .background(Color("SheetBackgroundColor"))
         .sheet(isPresented: $viewModel.state.bottomSheetVisible) {
             FilterBottomSheetView(
+                title: "Выбор категорий",
                 categories: viewModel.state.categories,
-                doOnApplyClicked: viewModel.updateSelectedCategories
+                doOnApplyClicked: viewModel.updateSelectedCategories,
+                doOnCategoriesSettingsClicked: viewModel.navigateToCategoriesSettingsScreen
             )
             .presentationDetents([.height(250)])
             .presentationCornerRadius(25)
+        }
+        .navigationTitle("Блюдо")
+        .toolbar {
+            Button(action: {
+                viewModel.toggleEditingMode()
+                index = 0
+            }, label: {
+                Text(viewModel.state.editingModeOn ? "Готово" : "Изменить")
+            })
         }
         
     }

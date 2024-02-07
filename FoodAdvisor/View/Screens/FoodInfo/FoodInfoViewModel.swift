@@ -14,6 +14,7 @@ class FoodInfoViewModel {
     
     private let food: FoodUiModel
     private let categories: [CategoryUiModel] = []
+    private let router = Router.instance
     
     init(food: FoodUiModel) {
         self.food = food
@@ -23,6 +24,10 @@ class FoodInfoViewModel {
             bottomSheetVisible: false,
             editingModeOn: false
         )
+    }
+    
+    func navigateToCategoriesSettingsScreen() {
+        router.navigateToEditCategoriesScreen()
     }
     
     func toggleEditingMode() {

@@ -20,6 +20,7 @@ class NewFoodViewModel {
     )
     
     private let categories: [CategoryUiModel] = []
+    private let router = Router.instance
     
     func changeEditMode() {
         var editMode = state.editMode
@@ -39,6 +40,10 @@ class NewFoodViewModel {
         if(selectedCategories.count >= 1) {
             state = state.copy(categories: selectedCategories)
         }
+    }
+    
+    func navigateToCategoriesSettingsScreen() {
+        router.navigateToEditCategoriesScreen()
     }
     
 }

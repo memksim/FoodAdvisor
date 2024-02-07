@@ -19,9 +19,9 @@ struct AddImagesView: View {
                 }, label: {
                     HStack {
                         Image(systemName: "plus.circle")
-                            .foregroundStyle(.orange)
+                            .foregroundStyle(Color.accentColor)
                         Text("Добавить изображения")
-                            .foregroundStyle(.orange)
+                            .foregroundStyle(Color.accentColor)
                     }
                 })
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -53,7 +53,6 @@ struct AddImagesView: View {
                 }
             }
         }
-        .frame(width: .infinity, height: 120)
         .padding(.init(top: 24, leading: 24, bottom: 0, trailing: 0))
     }
 }

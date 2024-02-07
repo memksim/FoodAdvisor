@@ -18,11 +18,18 @@ class MainScreenViewModel {
         filterBottomSheetVisible: false
     )
     
-    private var foods: [FoodUiModel] = []//todo load in init
+    private var foods: [FoodUiModel] = [] //todo load in init
     private var categories: [CategoryUiModel] = []
-    let router = Router.instance
+    private let router = Router.instance
     
-    //todo load food of day
+    func navigateToNewFoodScreen() {
+        router.navigateToNewFoodScreen()
+    }
+    
+    func navigateToCategoriesSettingsScreen() {
+        router.navigateToEditCategoriesScreen()
+    }
+    
     func showHideFilterBottomSheet() {
         state.filterBottomSheetVisible.toggle()
     }
@@ -55,6 +62,10 @@ class MainScreenViewModel {
             }
             state = state.copy(foods: filteredFoods, searchedFoodName: foodName)
         }
+    }
+    
+    private func loadData() {
+        //todo
     }
     
 }

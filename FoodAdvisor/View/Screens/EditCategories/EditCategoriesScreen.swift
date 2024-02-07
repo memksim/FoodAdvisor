@@ -13,13 +13,6 @@ struct EditCategoriesScreen: View {
     
     var body: some View {
         VStack {
-            Button(
-                action: viewModel.toggleEditMode,
-                label: {
-                    Text(viewModel.state.editingModeOn ? "Готово" : "Редактировать")
-                        .foregroundStyle(.orange)
-                }
-            ).frame(maxWidth: .infinity, alignment: .trailing).padding(.trailing, 18)
             SearchFieldView(doOnSearchClicked: viewModel.searchButtonClicked)
                 .padding(.init(top: 12, leading: 16, bottom: 0, trailing: 16))
             if(viewModel.state.categories.isEmpty) {
@@ -64,6 +57,15 @@ struct EditCategoriesScreen: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(Color("SheetBackgroundColor"))
+        .navigationTitle("Категории")
+        .toolbar{
+            Button(
+                action: viewModel.toggleEditMode,
+                label: {
+                    Text(viewModel.state.editingModeOn ? "Готово" : "Редактировать")
+                }
+            ).frame(maxWidth: .infinity, alignment: .trailing)
+        }
     }
 }
 

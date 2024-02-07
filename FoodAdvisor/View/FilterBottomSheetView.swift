@@ -9,16 +9,18 @@ import SwiftUI
 
 struct FilterBottomSheetView: View {
     
-    @Environment(\.dismiss) var dismiss
+    let title: String
     @State var categories: [CategoryUiModel]
     var doOnApplyClicked: (_ selectedCategories: [CategoryUiModel]) -> Void
+    var doOnCategoriesSettingsClicked: () -> Void
     
     @State private var unselectAll: Bool = false
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         VStack() {
             HStack {
-                Text("Фильтрация")
+                Text(title)
                     .foregroundStyle(Color("TitleTextColor"))
                     .font(.title)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -51,7 +53,8 @@ struct FilterBottomSheetView: View {
             }
             .padding(.init(top: 0, leading: 12, bottom: 0, trailing: 12))
             Button(action: {
-                //todo
+                doOnCategoriesSettingsClicked()
+                dismiss()
             }, label: {
                 HStack {
                     Image(systemName: "gearshape")
@@ -133,8 +136,12 @@ private struct SizePreferenceKey: PreferenceKey {
 
 #Preview {
     FilterBottomSheetView(
+        title: "Заголовок",
         categories: mockCategories,
         doOnApplyClicked: { _ in
+            
+        },
+        doOnCategoriesSettingsClicked: {
             
         }
     )

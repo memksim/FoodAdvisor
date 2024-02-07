@@ -23,21 +23,32 @@ struct MainScreen: View {
                     viewModel.findFoodsByName(foodName: newValue)
                 }),
                 doOnFilterClick: {
-                    viewModel.showHideFilterBottomSheet()
+                    if(!viewModel.state.foods.isEmpty) {
+                        viewModel.showHideFilterBottomSheet()
+                    }
                 },
                 doOnCloseSearchField: {
-                    viewModel.findFoodsByName(foodName: "")
+                    viewModel.findFoodsByName(foodName: "") 
                 },
-                doOnAddClick: {
-                    
-                }
+                doOnAddClick: viewModel.navigateToNewFoodScreen
             ).padding(.init(top: 0, leading: 16, bottom: 0, trailing: 16))
             ScrollView {
                 LazyVStack {
-                    ForEach(viewModel.state.foods, id: \.id) { food in
-                        Text(food.name)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        Divider()
+                    if(viewModel.state.foods.isEmpty) {
+                        Button(action: viewModel.navigateToNewFoodScreen, label: {
+                            HStack {
+                                Image(systemName: "plus")
+                                    .foregroundStyle(.gray)
+                                Text("Добавьте блюдо")
+                                    .foregroundStyle(.gray)
+                            }.frame(maxWidth: .infinity, alignment: .leading)
+                        })
+                    } else {
+                        ForEach(viewModel.state.foods, id: \.id) { food in
+                            Text(food.name)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Divider()
+                        }
                     }
                 }
             }
@@ -48,10 +59,13 @@ struct MainScreen: View {
         .sheet(
             isPresented: $viewModel.state.filterBottomSheetVisible) {
                 FilterBottomSheetView(
-                    categories: viewModel.state.categories
-                ) { selectedCategories in
-                    viewModel.filterFoodsByCatefories(categories: selectedCategories)
-                }
+                    title: "Фильтр по категориям",
+                    categories: viewModel.state.categories,
+                    doOnApplyClicked: { selectedCategories in
+                        viewModel.filterFoodsByCatefories(categories: selectedCategories)
+                    },
+                    doOnCategoriesSettingsClicked: viewModel.navigateToCategoriesSettingsScreen
+                )
                 .presentationDetents([.height(250)])
                 .presentationCornerRadius(25)
         }
